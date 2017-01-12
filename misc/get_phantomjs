@@ -1,0 +1,20 @@
+#!/bin/bash
+
+function download_phantomjs() {
+
+    rm -r $OPENSHIFT_RUNTIME_DIR/phantomjs-*
+	
+    wget -qO - https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-${DIST_PHANTOMJS_VER}-linux-x86_64.tar.bz2 | bzip2 -d | tar xf - -C $OPENSHIFT_RUNTIME_DIR
+    ln -fs ../phantomjs-${DIST_PHANTOMJS_VER}-linux-x86_64/bin/phantomjs $OPENSHIFT_RUNTIME_DIR/bin/phantomjs
+}
+
+function check_phantomjs() {
+	if [[ -x $OPENSHIFT_RUNTIME_DIR/bin/phantomjs ]] && \
+       [[ "`$OPENSHIFT_RUNTIME_DIR/bin/phantomjs --version`" =~ "${DIST_PHANTOMJS_VER}" ]] 
+    then
+		return 0
+	fi
+	
+	echo "Check phantomjs ${DIST_PHANTOMJS_VER} failed. Start downloading"
+	download_phantomjs
+}
